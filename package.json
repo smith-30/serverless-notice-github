@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "github-user-contributions": "^0.1.0"
+    "async": "^2.5.0",
+    "github-user-contributions": "^0.1.0",
+    "moment": "^2.18.1",
+    "request": "^2.81.0"
   },
   "devDependencies": {},
   "scripts": {

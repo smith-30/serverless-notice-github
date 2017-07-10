@@ -21,19 +21,36 @@ module.exports.notice = function(event, context) {
       return console.error(err);
     }
     data.forEach(printRepositoryCommits);
-    console.log(count);
-  });
+    
+    let message = 'There was a commit today!!';
+    let emoji = ':ghost:';
+    
+    if (count === 0) {
+      message = 'You have not committed today';
+      emoji = ':fearful:';
+    }
   
-  /**
-   * webhook でチャンネルにメッセージを返す
-   */
-  // request.post(webhookUrl, {
-  //   form: {
-  //     payload: JSON.stringify(response),
-  //   },
-  // }, (err, response, body) => {
-  //   callback(null, 'getData');
-  // });
+    /**
+     * webhook でチャンネルにメッセージを返す
+     */
+    let options = {
+      uri: webhookUrl,
+      headers: { 'Content-Type': 'application/json' },
+      json: {
+        username: 'github',
+        icon_emoji: emoji,
+        text: message,
+      },
+    };
+  
+    request.post(options, function(error, response, body){
+      if (!error && response.statusCode == 200) {
+        console.log(body);
+      } else {
+        console.log('error: '+ response.statusCode + '\n' + response.body);
+      }
+    });
+  });
 };
 
 /**
@@ -62,8 +79,7 @@ function printRepositoryCommits(branches) {
         if (!(commitsTree.hasOwnProperty(sha) || c.parents.length > 1)) {
           let commit = c.commit;
           
-          if (moment(commit.author.date).format('YYYY-MM') == '2017-07') {
-          // if (today.diff(moment(commit.author.date, 'YYYY-MM-DD h:mm:ss'), 'days') == 0) {
+          if (today.diff(moment(commit.author.date, 'YYYY-MM-DD h:mm:ss'), 'days') == 0) {
             commitsTree[sha] = {
               sha: sha,
               author: commit.author.name,

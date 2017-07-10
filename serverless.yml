@@ -25,5 +25,6 @@ functions:
   commit-notice:
     handler: commit-notice.notice
     events:
-      # 毎月1日の1時に実行(UTCなので -9hで設定)
-     - schedule: cron(00 3 9 * ? *)
+      # (UTCなので -9hで設定)
+     - schedule: cron(00 13 * * ? *)
+    timeout: 15
