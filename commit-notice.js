@@ -1,19 +1,44 @@
+'use strict';
+
 const github = require('github-user-contributions');
-const clientId = '167ded022abc0fc4e6cc';
-const clientSecret = 'd214eda008ca408c21707a5a22dcca82df23ad13';
+const clientId = process.env.github_client_id;
+const clientSecret = process.env.github_client_secret;
 const moment = require('moment');
+const request = require('request');
+const async = require('async');
 
 const client = github.client(clientId, clientSecret);
+const webhookUrl = process.env.slack_webhook_url;
+const githubUserName = process.env.github_user_name;
 
 const today = moment(moment().format(), 'YYYY-MM-DD h:mm:ss');
 
-client.commits('KoheiMisu', function(err, data) {
-  if (err) {
-    return console.error(err);
-  }
-  data.forEach(printRepositoryCommits);
-});
+let count = 0;
 
+module.exports.notice = function(event, context) {
+  client.commits(githubUserName, function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    data.forEach(printRepositoryCommits);
+    console.log(count);
+  });
+  
+  /**
+   * webhook でチャンネルにメッセージを返す
+   */
+  // request.post(webhookUrl, {
+  //   form: {
+  //     payload: JSON.stringify(response),
+  //   },
+  // }, (err, response, body) => {
+  //   callback(null, 'getData');
+  // });
+};
+
+/**
+ * @param branches
+ */
 function printRepositoryCommits(branches) {
   let response = {
     repository: '', // name of repository is stored under each branch object
@@ -58,7 +83,7 @@ function printRepositoryCommits(branches) {
       return commitsTree[sha];
     });
     if (Object.keys(response.commits).length > 0) {
-      // Store Objectをグローバルにおく？
+      count++;
     }
   }
 }

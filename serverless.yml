@@ -1,0 +1,29 @@
+service: github-commit-notice
+# include extra setting
+custom: ${file(./custom.yml)}
+
+# setting lambda
+provider:
+  name: aws
+  runtime: nodejs6.10
+  memorySize: 512 # optional, default is 1024. you can setting individual function.
+
+  # you can overwrite defaults here
+  stage: ${opt:stage} # production stage is [prod]
+  region: ap-northeast-1
+  # environmentの値は、lambda function内で
+  # process.env.{key}でアクセスする
+  environment:
+    stage: ${self:provider.stage}
+    slack_webhook_url: ${self:custom.slack_webhook_url}
+    github_user_name: ${self:custom.github_user_name}
+    github_client_id: ${self:custom.github_client_id}
+    github_client_secret: ${self:custom.github_client_secret}
+    region: ${self:provider.region}
+
+functions:
+  commit-notice:
+    handler: commit-notice.notice
+    events:
+      # 毎月1日の1時に実行(UTCなので -9hで設定)
+     - schedule: cron(00 3 9 * ? *)
