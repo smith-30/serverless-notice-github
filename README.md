@@ -4,6 +4,8 @@ https://serverless.com/framework/docs/providers/aws/guide/installation/
 
 ## how to use
 
+- npm install
+
 - rename `custom.dev.yml` to `custom.yml`
 
 - put parameters in the file.
