@@ -26,5 +26,6 @@ functions:
     handler: commit-notice.notice
     events:
       # (UTCなので -9hで設定)
-     - schedule: cron(00 13 * * ? *)
+     - schedule: cron(00 14 * * ? *)
+     - schedule: rate(4 hours)
     timeout: 15
